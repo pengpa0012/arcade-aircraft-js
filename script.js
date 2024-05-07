@@ -9,18 +9,30 @@ loadSprite("bullet", "./assets/bullet.png")
 const player = add([
     sprite("player"),
     pos(width() / 2, height() - 100),
+    area(),
+    "player"
 ])
 
 const enemy = add([
     sprite("enemy"),
-    pos(500, -100)
+    pos(500, -100),
+    area(),
+    "enemy"
 ])
+
 
 const score = add([
     text("Score: 0"),
     color(0, 0, 0),
     pos(50, 50),
     { value: 0 },
+])
+
+const life = add([
+    text("Life: 5"),
+    color(0, 0, 0),
+    pos(50, 100),
+    { value: 5 },
 ])
 
 enemy.onUpdate(() => {
@@ -47,6 +59,13 @@ player.onUpdate(() => {
     }
 })
 
+onCollide("player", "enemy", () => {
+    life.value -= 1
+    life.text = "Life: " + life.value
+    enemy.pos.y = -100
+    enemy.pos.x = rand(0, width() - 100)
+})
+
 // shoot
 onKeyPress("space", () => {
     const bullet = add([
@@ -69,7 +88,7 @@ onKeyPress("space", () => {
             enemy.pos.y = -100
             enemy.pos.x = rand(0, width() - 100)
             score.value += 5
-            score.text = "Score:" + score.value
+            score.text = "Score: " + score.value
         }
     })
 })
@@ -77,6 +96,7 @@ onKeyPress("space", () => {
 // TO ADD:
 // -player max x and y
 // -enemy spawn rate
+// -add explosion on enemy death
 // -background parallax
 // -sfx
 // -power ups/bullet
