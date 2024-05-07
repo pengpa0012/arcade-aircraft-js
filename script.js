@@ -11,6 +11,7 @@ const player = add([
 ])
 
 player.onUpdate(() => {
+    // move
     if (isKeyDown("w")) {
         player.move(0, -300)
     }
@@ -23,4 +24,20 @@ player.onUpdate(() => {
     if (isKeyDown("d")) {
         player.move(300, 0)
     }
+})
+
+// shoot
+onKeyPress("space", () => {
+    const bullet = add([
+        sprite("bullet"),
+        pos(0,0)
+    ])
+    bullet.pos.x = player.pos.x + 32
+    bullet.pos.y = player.pos.y
+    bullet.onUpdate(() => {
+        bullet.move(0, -1000)
+        if(bullet.pos.y <= 0) {
+            destroy(bullet)
+        }
+    })
 })
