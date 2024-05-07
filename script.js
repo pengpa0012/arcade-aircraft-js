@@ -16,6 +16,13 @@ const enemy = add([
     pos(500, -100)
 ])
 
+const score = add([
+    text("Score: 0"),
+    color(0, 0, 0),
+    pos(50, 50),
+    { value: 0 },
+])
+
 enemy.onUpdate(() => {
     if(enemy.pos.y >= height()) {
         enemy.pos.y = -100
@@ -27,16 +34,16 @@ enemy.onUpdate(() => {
 player.onUpdate(() => {
     // move
     if (isKeyDown("w")) {
-        player.move(0, -300)
+        player.move(0, -500)
     }
     if (isKeyDown("a")) {
-        player.move(-300, 0)
+        player.move(-500, 0)
     }
     if (isKeyDown("s")) {
-        player.move(0, 300)
+        player.move(0, 500)
     }
     if (isKeyDown("d")) {
-        player.move(300, 0)
+        player.move(500, 0)
     }
 })
 
@@ -61,6 +68,16 @@ onKeyPress("space", () => {
             destroy(bullet)
             enemy.pos.y = -100
             enemy.pos.x = rand(0, width() - 100)
+            score.value += 5
+            score.text = "Score:" + score.value
         }
     })
 })
+
+// TO ADD:
+// -player max x and y
+// -enemy spawn rate
+// -background parallax
+// -sfx
+// -power ups/bullet
+// -enemy bullet
