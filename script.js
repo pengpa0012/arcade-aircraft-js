@@ -111,7 +111,6 @@ onKeyPress("space", () => {
 })
 
 // TO ADD:
-// -player max x and ys
 // -enemy spawn rate
 // -add explosion on enemy death
 // -background parallax
