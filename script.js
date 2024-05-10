@@ -44,18 +44,35 @@ enemy.onUpdate(() => {
 })
 
 player.onUpdate(() => {
+    if(life.value <= 0) return
     // move
     if (isKeyDown("w")) {
-        player.move(0, -500)
+        if(player.pos.y <= 0) {
+            player.move(0, 0)
+        } else {
+            player.move(0, -500)
+        }
     }
     if (isKeyDown("a")) {
-        player.move(-500, 0)
+        if(player.pos.x <= 0) {
+            player.move(0, 0)
+        } else {
+            player.move(-500, 0)
+        }
     }
     if (isKeyDown("s")) {
-        player.move(0, 500)
+        if(player.pos.y >= height() - player.height) {
+            player.move(0, 0)
+        } else {
+            player.move(0, 500)
+        }
     }
     if (isKeyDown("d")) {
-        player.move(500, 0)
+        if(player.pos.x >= width() - player.width) {
+            player.move(0, 0)
+        } else {
+            player.move(500, 0)
+        }
     }
 })
 
@@ -94,7 +111,7 @@ onKeyPress("space", () => {
 })
 
 // TO ADD:
-// -player max x and y
+// -player max x and ys
 // -enemy spawn rate
 // -add explosion on enemy death
 // -background parallax
