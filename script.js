@@ -13,12 +13,25 @@ const player = add([
     "player"
 ])
 
-const enemy = add([
-    sprite("enemy"),
-    pos(500, -100),
-    area(),
-    "enemy"
-])
+function spawnEnemy() {
+    add([
+        sprite("enemy"),
+        pos(rand(0, width() - 100), -100),
+        area(),
+        "enemy"
+    ])
+    wait(3, spawnEnemy)
+}
+
+spawnEnemy()
+
+onUpdate("enemy", (enemy) => {
+	if(enemy.pos.y >= height()) {
+		destroy(enemy)
+	}
+	enemy.move(0, 100)
+})
+
 
 
 const score = add([
@@ -35,16 +48,10 @@ const life = add([
     { value: 5 },
 ])
 
-enemy.onUpdate(() => {
-    if(enemy.pos.y >= height()) {
-        enemy.pos.y = -100
-        enemy.pos.x = rand(0, width() - 100)
-    }
-    enemy.move(0, 300)
-})
 
 player.onUpdate(() => {
-    if(life.value <= 0) return
+    // if(life.value <= 0) return
+
     // move
     if (isKeyDown("w")) {
         if(player.pos.y <= 0) {
@@ -79,15 +86,18 @@ player.onUpdate(() => {
 onCollide("player", "enemy", () => {
     life.value -= 1
     life.text = "Life: " + life.value
-    enemy.pos.y = -100
-    enemy.pos.x = rand(0, width() - 100)
+})
+
+onCollide("enemy", "bullet", () => {
+	console.log("yeye")
 })
 
 // shoot
 onKeyPress("space", () => {
     const bullet = add([
         sprite("bullet"),
-        pos(0,0)
+        pos(0,0),
+		"bullet"
     ])
     bullet.pos.x = player.pos.x + 32
     bullet.pos.y = player.pos.y
@@ -98,20 +108,11 @@ onKeyPress("space", () => {
         if(bullet.pos.y <= 0) {
             destroy(bullet)
         }
-
-        // check collision on enemy and reset pos
-        if(((bullet.pos.x - enemy.pos.x >= 0) && (bullet.pos.x - enemy.pos.x <= 100)) && ((bullet.pos.y - enemy.pos.y >= 0) && (bullet.pos.y - enemy.pos.y <= 100))) {
-            destroy(bullet)
-            enemy.pos.y = -100
-            enemy.pos.x = rand(0, width() - 100)
-            score.value += 5
-            score.text = "Score: " + score.value
-        }
     })
 })
 
 // TO ADD:
-// -enemy spawn rate
+// -fix bullet collision
 // -add explosion on enemy death
 // -background parallax
 // -sfx
