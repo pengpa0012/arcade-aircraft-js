@@ -33,6 +33,30 @@ onUpdate("enemy", (enemy) => {
 	enemy.move(0, 100)
 })
 
+function spawnEnemyBullet() {
+    // if(player.hp() <= 0) return
+	const enemies = get("enemy")
+
+	enemies.forEach(enemy => {
+		add([
+			sprite("bullet"),
+			pos(enemy.pos.x + 40, enemy.pos.y + enemy.height),
+			area(),
+			"enemy_bullet"
+		])
+	})
+	wait(2.5, spawnEnemyBullet)
+}
+
+spawnEnemyBullet()
+
+onUpdate("enemy_bullet", (enemy_bullet) => {
+	if(enemy_bullet.pos.y >= height()) {
+		destroy(enemy_bullet)
+	}
+	enemy_bullet.move(0, 500)
+})
+
 function spawnBullet() {
     // if(player.hp() <= 0) return
 	add([
@@ -41,7 +65,7 @@ function spawnBullet() {
 		area(),
 		"bullet"
     ])
-    wait(0.7, spawnBullet)
+    wait(1, spawnBullet)
 }
 
 spawnBullet()
@@ -114,9 +138,13 @@ onCollide("player", "enemy", () => {
     life.text = "Life: " + player.hp()
 })
 
+onCollide("player", "enemy_bullet", () => {
+    player.hurt(1)
+    life.text = "Life: " + player.hp()
+})
+
 // TO ADD:
 // -add explosion on enemy death
 // -background parallax
 // -sfx
 // -power ups/bullet
-// -enemy bullet
