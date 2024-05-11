@@ -65,14 +65,15 @@ function spawnBullet() {
 		area(),
 		"bullet"
     ])
-    wait(1, spawnBullet)
+    if(player.hp() > 0) {
+        wait(1, spawnBullet)
+    }
 }
 
 spawnBullet()
 
 onUpdate("bullet", (bullet) => {
 	bullet.move(0, -1000)
-	// check if bullet is out of 
 	if(bullet.pos.y <= -100) {
 		destroy(bullet)
 	}
@@ -128,6 +129,7 @@ player.onUpdate(() => {
 })
 
 onCollide("bullet", "enemy", (bullet, enemy) => {
+    // add explosion here
 	destroy(bullet)
 	destroy(enemy)
 	score.text = "Score: " + (score.value += 10)
@@ -138,9 +140,13 @@ onCollide("player", "enemy", () => {
     life.text = "Life: " + player.hp()
 })
 
-onCollide("player", "enemy_bullet", () => {
+onCollide("player", "enemy_bullet", (_, enemy_bullet) => {
     player.hurt(1)
     life.text = "Life: " + player.hp()
+    destroy(enemy_bullet)
+    if(player.hp() == 0) {
+        destroy(player)
+    }
 })
 
 // TO ADD:
