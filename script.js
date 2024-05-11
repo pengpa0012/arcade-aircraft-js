@@ -32,8 +32,6 @@ onUpdate("enemy", (enemy) => {
 	enemy.move(0, 100)
 })
 
-
-
 const score = add([
     text("Score: 0"),
     color(0, 0, 0),
@@ -47,7 +45,6 @@ const life = add([
     pos(50, 100),
     { value: 5 },
 ])
-
 
 player.onUpdate(() => {
     // if(life.value <= 0) return
@@ -88,27 +85,27 @@ onCollide("player", "enemy", () => {
     life.text = "Life: " + life.value
 })
 
-onCollide("enemy", "bullet", () => {
-	console.log("yeye")
-})
-
-// shoot
-onKeyPress("space", () => {
-    const bullet = add([
+function spawnBullet() {
+	add([
         sprite("bullet"),
-        pos(0,0),
+        pos(player.pos.x + 32, player.pos.y),
 		"bullet"
     ])
-    bullet.pos.x = player.pos.x + 32
-    bullet.pos.y = player.pos.y
-    bullet.onUpdate(() => {
-        bullet.move(0, -1000)
+    wait(0.05, spawnBullet)
+}
 
-        // check if bullet is out of screen
-        if(bullet.pos.y <= 0) {
-            destroy(bullet)
-        }
-    })
+spawnBullet()
+
+onUpdate("bullet", (bullet) => {
+	bullet.move(0, -1000)
+	// check if bullet is out of screen
+	if(bullet.pos.y <= 0) {
+		destroy(bullet)
+	}
+})
+
+onCollide("bullet", "enemy", () => {
+	console.log("yeye")
 })
 
 // TO ADD:
