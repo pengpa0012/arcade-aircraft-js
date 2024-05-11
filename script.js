@@ -10,6 +10,7 @@ const player = add([
     sprite("player"),
     pos(width() / 2, height() - 100),
     area(),
+	health(5),
     "player"
 ])
 
@@ -32,22 +33,44 @@ onUpdate("enemy", (enemy) => {
 	enemy.move(0, 100)
 })
 
+function spawnBullet() {
+    // if(player.hp() <= 0) return
+	add([
+        sprite("bullet"),
+        pos(player.pos.x + 32, player.pos.y),
+		area(),
+		"bullet"
+    ])
+    wait(0.7, spawnBullet)
+}
+
+spawnBullet()
+
+onUpdate("bullet", (bullet) => {
+	bullet.move(0, -1000)
+	// check if bullet is out of 
+	if(bullet.pos.y <= -100) {
+		destroy(bullet)
+	}
+})
+
 const score = add([
     text("Score: 0"),
     color(0, 0, 0),
     pos(50, 50),
+	z(100),
     { value: 0 },
 ])
-
 const life = add([
     text("Life: 5"),
     color(0, 0, 0),
     pos(50, 100),
-    { value: 5 },
+	z(100),
+    { value: player.hp() },
 ])
 
 player.onUpdate(() => {
-    // if(life.value <= 0) return
+    // if(player.hp() <= 0) return
 
     // move
     if (isKeyDown("w")) {
@@ -80,36 +103,18 @@ player.onUpdate(() => {
     }
 })
 
+onCollide("bullet", "enemy", (bullet, enemy) => {
+	destroy(bullet)
+	destroy(enemy)
+	score.text = "Score: " + (score.value += 10)
+})
+
 onCollide("player", "enemy", () => {
-    life.value -= 1
-    life.text = "Life: " + life.value
-})
-
-function spawnBullet() {
-	add([
-        sprite("bullet"),
-        pos(player.pos.x + 32, player.pos.y),
-		"bullet"
-    ])
-    wait(0.05, spawnBullet)
-}
-
-spawnBullet()
-
-onUpdate("bullet", (bullet) => {
-	bullet.move(0, -1000)
-	// check if bullet is out of screen
-	if(bullet.pos.y <= 0) {
-		destroy(bullet)
-	}
-})
-
-onCollide("bullet", "enemy", () => {
-	console.log("yeye")
+    player.hurt(1)
+    life.text = "Life: " + player.hp()
 })
 
 // TO ADD:
-// -fix bullet collision
 // -add explosion on enemy death
 // -background parallax
 // -sfx
