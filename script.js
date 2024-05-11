@@ -2,9 +2,12 @@ kaboom({
     background: [ 255, 255, 255, ]
 })
 
-loadSprite("player", "./assets/aircraft.png")
-loadSprite("enemy", "./assets/enemy.png")
-loadSprite("bullet", "./assets/bullet.png")
+loadSprite("player", "./assets/images/aircraft.png")
+loadSprite("enemy", "./assets/images/enemy.png")
+loadSprite("bullet", "./assets/images/bullet.png")
+loadSound("shoot", "./assets/sfx/shoot.mp3")
+loadSound("hurt", "./assets/sfx/hurt.mp3")
+loadSound("explode", "./assets/sfx/explode.ogg")
 
 const player = add([
     sprite("player"),
@@ -65,6 +68,7 @@ function spawnBullet() {
 		area(),
 		"bullet"
     ])
+    play("shoot", {volume: 0.1})
     if(player.hp() > 0) {
         wait(1, spawnBullet)
     }
@@ -132,16 +136,19 @@ onCollide("bullet", "enemy", (bullet, enemy) => {
     // add explosion here
 	destroy(bullet)
 	destroy(enemy)
+    play("explode")
 	score.text = "Score: " + (score.value += 10)
 })
 
 onCollide("player", "enemy", () => {
     player.hurt(1)
+    play("hurt")
     life.text = "Life: " + player.hp()
 })
 
 onCollide("player", "enemy_bullet", (_, enemy_bullet) => {
     player.hurt(1)
+    play("hurt")
     life.text = "Life: " + player.hp()
     destroy(enemy_bullet)
     if(player.hp() == 0) {
