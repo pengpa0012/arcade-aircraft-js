@@ -17,6 +17,21 @@ const player = add([
     "player"
 ])
 
+const score = add([
+    text("Score: 0"),
+    color(0, 0, 0),
+    pos(50, 50),
+	z(100),
+    { value: 0 },
+])
+const life = add([
+    text("Life: 5"),
+    color(0, 0, 0),
+    pos(50, 100),
+	z(100),
+    { value: player.hp() },
+])
+
 function spawnEnemy() {
     add([
         sprite("enemy"),
@@ -24,7 +39,8 @@ function spawnEnemy() {
         area(),
         "enemy"
     ])
-    wait(3, spawnEnemy)
+    const ticker = 3 - (score.value / 100)
+    wait(ticker < 1 ? 1 : ticker, spawnEnemy)
 }
 
 spawnEnemy()
@@ -70,7 +86,8 @@ function spawnBullet() {
     ])
     play("shoot", {volume: 0.1})
     if(player.hp() > 0) {
-        wait(1, spawnBullet)
+        const ticker = 1 - (score.value / 1000)
+        wait(ticker < 0.09 ? 0.09 : ticker, spawnBullet)
     }
 }
 
@@ -82,21 +99,6 @@ onUpdate("bullet", (bullet) => {
 		destroy(bullet)
 	}
 })
-
-const score = add([
-    text("Score: 0"),
-    color(0, 0, 0),
-    pos(50, 50),
-	z(100),
-    { value: 0 },
-])
-const life = add([
-    text("Life: 5"),
-    color(0, 0, 0),
-    pos(50, 100),
-	z(100),
-    { value: player.hp() },
-])
 
 player.onUpdate(() => {
     // if(player.hp() <= 0) return
@@ -159,5 +161,4 @@ onCollide("player", "enemy_bullet", (_, enemy_bullet) => {
 // TO ADD:
 // -add explosion on enemy death
 // -background parallax
-// -sfx
 // -power ups/bullet
