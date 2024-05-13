@@ -5,6 +5,8 @@ kaboom({
 loadSprite("player", "./assets/images/aircraft.png")
 loadSprite("enemy", "./assets/images/enemy.png")
 loadSprite("bullet", "./assets/images/bullet.png")
+loadSprite("heart", "./assets/images/heart.png")
+loadSprite("ammo", "./assets/images/ammo.png")
 loadSound("shoot", "./assets/sfx/shoot.mp3")
 loadSound("hurt", "./assets/sfx/hurt.mp3")
 loadSound("explode", "./assets/sfx/explode.ogg")
@@ -31,6 +33,24 @@ const life = add([
 	z(100),
     { value: player.hp() },
 ])
+
+function spawnPowerUps() {
+    const randomize = rand(0, 5)
+    console.log(randomize)
+    add([
+        sprite(randomize > 1 ? "ammo" : "heart"),
+        pos(rand(0, width() - 100), -100),
+        area(),
+        "power_ups"
+    ])
+}
+
+onUpdate("power_ups", (power_ups) => {
+    if(power_ups.pos.y >= height()) {
+		destroy(power_ups)
+	}
+	power_ups.move(0, 80)
+})
 
 function spawnEnemy() {
     add([
@@ -140,12 +160,29 @@ onCollide("bullet", "enemy", (bullet, enemy) => {
 	destroy(enemy)
     play("explode")
 	score.text = "Score: " + (score.value += 10)
+
+    // spawn power ups
+    const randomize = rand(0, 100)
+    if(randomize < 5) {
+        spawnPowerUps()
+    }
 })
 
 onCollide("player", "enemy", () => {
     player.hurt(1)
     play("hurt")
     life.text = "Life: " + player.hp()
+})
+
+onCollide("player", "power_ups", (_, power_ups) => {
+    const isHeart = power_ups.width == 64
+    if(isHeart) {
+        player.heal(1)
+        life.text = "Life: " + player.hp()
+    } else {
+        // update fire rate
+    }
+    destroy(power_ups)
 })
 
 onCollide("player", "enemy_bullet", (_, enemy_bullet) => {
@@ -162,3 +199,5 @@ onCollide("player", "enemy_bullet", (_, enemy_bullet) => {
 // -add explosion on enemy death
 // -background parallax
 // -power ups/bullet
+// -add dash
+// -add menu
