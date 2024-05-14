@@ -11,7 +11,7 @@ loadSound("shoot", "./assets/sfx/shoot.mp3")
 loadSound("hurt", "./assets/sfx/hurt.mp3")
 loadSound("explode", "./assets/sfx/explode.ogg")
 let isGameStart = false
-
+let ammoPowerUps = false
 
 scene("menu", () => {
     add([
@@ -140,6 +140,28 @@ scene("start", () => {
             area(),
             "bullet"
         ])
+
+        if(ammoPowerUps) {
+            add([
+                sprite("bullet"),
+                pos(player.pos.x + 32, player.pos.y),
+                area(),
+                "bullet",
+                {
+                    dir: "right"
+                }
+            ])
+            add([
+                sprite("bullet"),
+                pos(player.pos.x + 32, player.pos.y),
+                area(),
+                "bullet",
+                {
+                    dir: "left"
+                }
+            ])
+        }
+
         play("shoot", {volume: 0.1})
         if(player.hp() > 0) {
             const ticker = 1 - (score.value / 1000)
@@ -150,7 +172,19 @@ scene("start", () => {
     spawnBullet()
     
     onUpdate("bullet", (bullet) => {
-        bullet.move(0, -1000)
+        if(ammoPowerUps) {
+            setTimeout(() => {
+                ammoPowerUps = false
+            }, 10000)
+        }
+        if(bullet.dir == "left") {
+            bullet.move(-500, -1000)
+        } else if(bullet.dir == "right") {
+            bullet.move(500, -1000)
+        } else {
+            bullet.move(0, -1000)
+        }
+        
         if(bullet.pos.y <= -100) {
             destroy(bullet)
         }
@@ -220,6 +254,7 @@ scene("start", () => {
             life.text = "Life: " + player.hp()
         } else {
             // update fire rate
+            ammoPowerUps = true
         }
         destroy(power_ups)
     })
@@ -240,3 +275,4 @@ scene("start", () => {
 // -background parallax
 // -power ups bullet
 // -add dash
+// -add enemy health
