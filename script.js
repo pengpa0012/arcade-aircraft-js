@@ -12,39 +12,42 @@ loadSound("hurt", "./assets/sfx/hurt.mp3")
 loadSound("explode", "./assets/sfx/explode.ogg")
 let isGameStart = false
 
-function startMenu() {
+
+scene("menu", () => {
     add([
-        text("Start Game"),
-        pos((width() - 202.5) / 2, height() / 2),
+        text("Press SPACE to start"),
+        pos((width() - 405) / 2, height() / 2),
         color(0,0,0),
-        area(),
-        "start"
     ])
-    isGameStart = false
-}
 
-startMenu()
-
-onClick("start", (start) => {
-    destroy(start)
-    destroyAll("final_score")
-    isGameStart = true
-    startGame()
+    onKeyPress("space", () => {
+        go("start")
+    })
 })
 
-function scoreMenu(score) {
+go("menu")
+
+scene("score", (score) => {
     add([
         text(`Your Score: ${score}`),
         pos((width() - 283) / 2, (height() - 100) / 2),
         color(0,0,0),
         area(),
-        "final_score"
     ])
-    startMenu()
-}
 
-function startGame() {
-    if(!isGameStart) return
+    add([
+        text(`Press SPACE to restart`),
+        pos((width() - 405) / 2, height() / 2),
+        color(0,0,0),
+    ])
+
+    onKeyPress("space", () => {
+        go("start")
+    })
+})
+
+
+scene("start", () => {
     const player = add([
         sprite("player"),
         pos(width() / 2, height() - 100),
@@ -69,7 +72,6 @@ function startGame() {
     ])
     
     function spawnPowerUps() {
-        if(!isGameStart) return
         const randomize = rand(0, 5)
         add([
             sprite(randomize > 1 ? "ammo" : "heart"),
@@ -87,7 +89,6 @@ function startGame() {
     })
     
     function spawnEnemy() {
-        if(!isGameStart) return
         add([
             sprite("enemy"),
             pos(rand(0, width() - 100), -100),
@@ -108,7 +109,6 @@ function startGame() {
     })
     
     function spawnEnemyBullet() {
-        if(!isGameStart) return
         // if(player.hp() <= 0) return
         const enemies = get("enemy")
     
@@ -133,7 +133,6 @@ function startGame() {
     })
     
     function spawnBullet() {
-        if(!isGameStart) return
         // if(player.hp() <= 0) return
         add([
             sprite("bullet"),
@@ -210,7 +209,7 @@ function startGame() {
         play("hurt")
         life.text = "Life: " + player.hp()
         if(player.hp() <= 0) {
-            goToScore()
+            go("score", score.value)
         }
     })
     
@@ -231,23 +230,10 @@ function startGame() {
         life.text = "Life: " + player.hp()
         destroy(enemy_bullet)
         if(player.hp() <= 0) {
-            goToScore()
+            go("score", score.value)
         }
     })
-
-    function goToScore() {
-        const final_score = score.value
-        destroyAll("enemy")
-        destroyAll("bullet")
-        destroyAll("enemy_bullet")
-        destroyAll("power_ups")
-        destroy(player)
-        destroy(score)
-        destroy(life)
-        isGameStart = false
-        scoreMenu(final_score)
-    }
-}
+})
 
 // TO ADD:
 // -add explosion on enemy death
