@@ -6,6 +6,7 @@ loadSprite("player", "./assets/images/aircraft.png")
 loadSprite("enemy", "./assets/images/enemy.png")
 loadSprite("bullet", "./assets/images/bullet.png")
 loadSprite("heart", "./assets/images/heart.png")
+loadSprite("menu-bg", "./assets/images/menu-bg.jpg")    
 loadSprite("ammo", "./assets/images/ammo.png")
 loadSound("shoot", "./assets/sfx/shoot.mp3")
 loadSound("hurt", "./assets/sfx/hurt.mp3")
@@ -14,9 +15,32 @@ let isGameStart = false
 let ammoPowerUps = false
 
 scene("menu", () => {
+    const bg = add([
+        sprite("menu-bg"),
+        pos(0,0),
+        scale(0.5),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        scale(1),
+        fixed(),
+        "bg"
+    ])
+
+    bg.scaleTo(Math.max(
+        width() / 1914,
+        height() / 1251
+    ))
+
     add([
-        text("Press SPACE to start"),
-        pos((width() - 405) / 2, height() / 2),
+        text("Arcade Aircraft"),
+        pos(width() / 2, (height() - 100) / 2),
+        anchor("center"),
+        color(0,0,0),
+    ])
+    add([
+        text("Press SPACE to start", {size: 20}),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
         color(0,0,0),
     ])
 
@@ -28,16 +52,32 @@ scene("menu", () => {
 go("menu")
 
 scene("score", (score) => {
+    const bg = add([
+        sprite("menu-bg"),
+        pos(0,0),
+        scale(0.5),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
+        scale(1),
+        fixed()
+    ])
+
+    bg.scaleTo(Math.max(
+        width() / 1914,
+        height() / 1251
+    ))
     add([
         text(`Your Score: ${score}`),
-        pos((width() - 283) / 2, (height() - 100) / 2),
+        pos(width() / 2, (height() - 100) / 2),
         color(0,0,0),
+        anchor("center"),
         area(),
     ])
 
     add([
-        text(`Press SPACE to restart`),
-        pos((width() - 405) / 2, height() / 2),
+        text("Press SPACE to restart", {size: 20}),
+        pos(width() / 2, height() / 2),
+        anchor("center"),
         color(0,0,0),
     ])
 
@@ -48,6 +88,7 @@ scene("score", (score) => {
 
 
 scene("start", () => {
+    setBackground(127,205,255)
     const player = add([
         sprite("player"),
         pos(width() / 2, height() - 100),
