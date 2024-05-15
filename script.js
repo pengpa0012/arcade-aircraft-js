@@ -8,6 +8,7 @@ loadSprite("bullet", "./assets/images/bullet.png")
 loadSprite("heart", "./assets/images/heart.png")
 loadSprite("menu-bg", "./assets/images/menu-bg.jpg")    
 loadSprite("ammo", "./assets/images/ammo.png")
+loadSprite("cloud", "./assets/images/cloud-1.png")
 loadSound("shoot", "./assets/sfx/shoot.mp3")
 loadSound("hurt", "./assets/sfx/hurt.mp3")
 loadSound("explode", "./assets/sfx/explode.ogg")
@@ -127,6 +128,31 @@ scene("start", () => {
             destroy(power_ups)
         }
         power_ups.move(0, 80)
+    })
+
+    function spawnCloud() {
+        add([
+            sprite("cloud", {
+                width: 100,
+                height: 300,
+            }),
+            z(-1),
+            pos(rand(0, width() - 100), -500),
+            "cloud",
+            {
+                speed: rand(50, 70)
+            }
+        ])
+        wait(10, spawnCloud)
+    }
+    
+    spawnCloud()
+    
+    onUpdate("cloud", (cloud) => {
+        if(cloud.pos.y >= height()) {
+            destroy(cloud)
+        }
+        cloud.move(0, cloud.speed)
     })
     
     function spawnEnemy() {
