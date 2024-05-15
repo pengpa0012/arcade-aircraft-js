@@ -93,7 +93,9 @@ scene("start", () => {
             sprite("enemy"),
             pos(rand(0, width() - 100), -100),
             area(),
-            "enemy"
+            // add enemy health every 400 score
+            health(score.value > 400 ? score.value / 400 : 1),
+            "enemy",
         ])
         const ticker = 3 - (score.value / 100)
         wait(ticker < 1 ? 1 : ticker, spawnEnemy)
@@ -226,16 +228,20 @@ scene("start", () => {
     
     onCollide("bullet", "enemy", (bullet, enemy) => {
         // add explosion here
-        destroy(bullet)
-        destroy(enemy)
-        play("explode")
-        score.text = "Score: " + (score.value += 10)
-    
-        // spawn power ups
-        const randomize = rand(0, 100)
-        if(randomize < 5) {
-            spawnPowerUps()
+        enemy.hurt(1)
+        if(enemy.hp() <= 0) {
+            destroy(enemy)
+            play("explode")
+
+            score.text = "Score: " + (score.value += randi(10, 15))
+
+            // spawn power ups
+            const randomize = rand(0, 100)
+            if(randomize < 5) {
+                spawnPowerUps()
+            }
         }
+        destroy(bullet)
     })
     
     onCollide("player", "enemy", () => {
@@ -273,6 +279,4 @@ scene("start", () => {
 // TO ADD:
 // -add explosion on enemy death
 // -background parallax
-// -power ups bullet
-// -add dash
-// -add enemy health
+// -add dash, shield
