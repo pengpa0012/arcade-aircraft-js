@@ -11,6 +11,7 @@ loadSprite("ammo", "./assets/images/ammo.png")
 loadSprite("cloud", "./assets/images/cloud-1.png")
 loadSound("shoot", "./assets/sfx/shoot.mp3")
 loadSound("hurt", "./assets/sfx/hurt.mp3")
+loadSound("hit", "./assets/sfx/hit.mp3")
 loadSound("explode", "./assets/sfx/explode.ogg")
 let isGameStart = false
 let ammoPowerUps = false
@@ -114,9 +115,9 @@ scene("start", () => {
     ])
     
     function spawnPowerUps() {
-        const randomize = rand(0, 5)
+        const randomize = rand(0, 10)
         add([
-            sprite(randomize > 1 ? "ammo" : "heart"),
+            sprite(randomize < 1 ? "ammo" : "heart"),
             pos(rand(0, width() - 100), -100),
             area(),
             "power_ups"
@@ -189,7 +190,8 @@ scene("start", () => {
                 "enemy_bullet"
             ])
         })
-        wait(2.5, spawnEnemyBullet)
+        const ticker = 2.5 - (score.value / 1000)
+        wait(ticker < 0.5 ? 0.5 : ticker, spawnEnemyBullet)
     }
     
     spawnEnemyBullet()
@@ -202,7 +204,6 @@ scene("start", () => {
     })
     
     function spawnBullet() {
-        // if(player.hp() <= 0) return
         add([
             sprite("bullet"),
             pos(player.pos.x + 32, player.pos.y),
@@ -260,8 +261,6 @@ scene("start", () => {
     })
     
     player.onUpdate(() => {
-        // if(player.hp() <= 0) return
-    
         // move
         if (isKeyDown("w")) {
             if(player.pos.y <= 0) {
@@ -303,11 +302,14 @@ scene("start", () => {
             score.text = "Score: " + (score.value += randi(10, 15))
 
             // spawn power ups
-            const randomize = rand(0, 100)
+            const randomize = rand(0, 150)
             if(randomize < 5) {
                 spawnPowerUps()
             }
+        } else {
+            play("hit")
         }
+
         destroy(bullet)
     })
     
@@ -345,5 +347,4 @@ scene("start", () => {
 
 // TO ADD:
 // -add explosion on enemy death
-// -background parallax
 // -add dash, shield
